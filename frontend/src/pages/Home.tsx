@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../services/api';
-import { ProductoBase, VarianteProducto } from '../types';
+import type { ProductoBase, VarianteProducto } from '../types';
 import { Search } from 'lucide-react';
 
 const Home: React.FC = () => {

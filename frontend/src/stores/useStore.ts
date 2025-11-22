@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { VarianteProducto } from '../types';
+import type { VarianteProducto } from '../types';
 import api from '../services/api';
 
 interface AppState {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import api from '../services/api';
-import { MovimientoStock } from '../types';
+import type { MovimientoStock } from '../types';
 import { Search } from 'lucide-react';
 
 const HistoryPage: React.FC = () => {

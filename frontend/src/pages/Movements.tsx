@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
-import { VarianteProducto, TipoMovimiento, MotivoMovimiento, MovimientoStock } from '../types';
+import { TipoMovimiento, MotivoMovimiento } from '../types';
+import type { VarianteProducto, MovimientoStock } from '../types';
 import { Search, Save } from 'lucide-react';
 
 const Movements: React.FC = () => {

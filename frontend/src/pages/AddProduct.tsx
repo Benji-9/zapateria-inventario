@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import api from '../services/api';
-import { ProductoBase, Categoria, Genero, VarianteProducto } from '../types';
+import { Categoria, Genero } from '../types';
+import type { ProductoBase, VarianteProducto } from '../types';
 import { Plus, Save } from 'lucide-react';
 
 const AddProduct: React.FC = () => {

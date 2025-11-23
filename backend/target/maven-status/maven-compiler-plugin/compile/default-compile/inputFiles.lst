@@ -5,13 +5,11 @@ C:\Users\benja\OneDrive\Desktop\Takane\Codigo\zapateria-inventario\backend\src\m
 C:\Users\benja\OneDrive\Desktop\Takane\Codigo\zapateria-inventario\backend\src\main\java\com\zapateria\inventario\service\StockService.java
 C:\Users\benja\OneDrive\Desktop\Takane\Codigo\zapateria-inventario\backend\src\main\java\com\zapateria\inventario\model\enums\Categoria.java
 C:\Users\benja\OneDrive\Desktop\Takane\Codigo\zapateria-inventario\backend\src\main\java\com\zapateria\inventario\ZapateriaApplication.java
-C:\Users\benja\OneDrive\Desktop\Takane\Codigo\zapateria-inventario\backend\src\main\java\com\zapateria\inventario\controller\ReporteController.java
 C:\Users\benja\OneDrive\Desktop\Takane\Codigo\zapateria-inventario\backend\src\main\java\com\zapateria\inventario\model\enums\Rol.java
 C:\Users\benja\OneDrive\Desktop\Takane\Codigo\zapateria-inventario\backend\src\main\java\com\zapateria\inventario\repository\UsuarioRepository.java
 C:\Users\benja\OneDrive\Desktop\Takane\Codigo\zapateria-inventario\backend\src\main\java\com\zapateria\inventario\service\ProductoService.java
 C:\Users\benja\OneDrive\Desktop\Takane\Codigo\zapateria-inventario\backend\src\main\java\com\zapateria\inventario\model\enums\TipoMovimiento.java
 C:\Users\benja\OneDrive\Desktop\Takane\Codigo\zapateria-inventario\backend\src\main\java\com\zapateria\inventario\model\Usuario.java
-C:\Users\benja\OneDrive\Desktop\Takane\Codigo\zapateria-inventario\backend\src\main\java\com\zapateria\inventario\service\ExcelService.java
 C:\Users\benja\OneDrive\Desktop\Takane\Codigo\zapateria-inventario\backend\src\main\java\com\zapateria\inventario\repository\VarianteProductoRepository.java
 C:\Users\benja\OneDrive\Desktop\Takane\Codigo\zapateria-inventario\backend\src\main\java\com\zapateria\inventario\model\VarianteProducto.java
 C:\Users\benja\OneDrive\Desktop\Takane\Codigo\zapateria-inventario\backend\src\main\java\com\zapateria\inventario\controller\StockController.java

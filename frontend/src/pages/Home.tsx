@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import api from '../services/api';
 import type { ProductoBase, VarianteProducto } from '../types';
-import { Search, FileSpreadsheet, Upload } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { Categoria } from '../types';
 import { useToast } from '../context/ToastContext';
-import ExcelUpload from '../components/ExcelUpload';
 
 const Home: React.FC = () => {
     const { showToast } = useToast();
     const [productos, setProductos] = useState<ProductoBase[]>([]);
-    const [showImportModal, setShowImportModal] = useState(false);
-
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState<string>('');
@@ -25,6 +22,7 @@ const Home: React.FC = () => {
             setProductos(response.data);
         } catch (error) {
             console.error('Error fetching inventory:', error);
+            showToast('Error al cargar inventario', 'error');
         } finally {
             setLoading(false);
         }
@@ -38,43 +36,10 @@ const Home: React.FC = () => {
         return matchesSearch && matchesCategory;
     });
 
-    const handleExportExcel = async () => {
-        try {
-            const response = await api.get('/reportes/inventario/excel', {
-                responseType: 'blob',
-            });
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', 'inventario.xlsx');
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            showToast('Inventario exportado correctamente', 'success');
-        } catch (error) {
-            console.error('Error exporting excel:', error);
-            showToast('Error al exportar inventario', 'error');
-        }
-    };
-
     return (
         <div>
             <div className="mb-4 flex justify-between items-center">
                 <h2 className="text-2xl font-bold text-gray-800">Inventario</h2>
-                <div className="flex gap-2">
-                    <button
-                        onClick={() => setShowImportModal(true)}
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                        <Upload size={20} /> Importar
-                    </button>
-                    <button
-                        onClick={handleExportExcel}
-                        className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                    >
-                        <FileSpreadsheet size={20} /> Exportar
-                    </button>
-                </div>
             </div>
 
             <div className="mb-4 space-y-3">
@@ -116,15 +81,6 @@ const Home: React.FC = () => {
                         <ProductCard key={producto.id} producto={producto} />
                     ))}
                 </div>
-            )}
-
-            {showImportModal && (
-                <ExcelUpload
-                    onClose={() => setShowImportModal(false)}
-                    onSuccess={() => {
-                        fetchInventory();
-                    }}
-                />
             )}
         </div>
     );

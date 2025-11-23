@@ -6,6 +6,7 @@ import com.zapateria.inventario.service.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -18,13 +19,9 @@ public class StockController {
     private StockService stockService;
 
     @PostMapping("/movimientos")
-    public ResponseEntity<?> registrarMovimiento(@RequestBody MovimientoStock movimiento) {
-        try {
-            MovimientoStock nuevoMovimiento = stockService.registrarMovimiento(movimiento);
-            return ResponseEntity.ok(nuevoMovimiento);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<MovimientoStock> registrarMovimiento(@Valid @RequestBody MovimientoStock movimiento) {
+        MovimientoStock nuevoMovimiento = stockService.registrarMovimiento(movimiento);
+        return ResponseEntity.ok(nuevoMovimiento);
     }
 
     @GetMapping("/alertas")

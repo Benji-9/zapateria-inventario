@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import api from '../services/api';
 import type { ProductoBase, VarianteProducto } from '../types';
-import { Search } from 'lucide-react';
+import { Search, FileSpreadsheet, Upload } from 'lucide-react';
+import { Categoria } from '../types';
+import { useToast } from '../context/ToastContext';
+import ExcelUpload from '../components/ExcelUpload';
 
 const Home: React.FC = () => {
+    const { showToast } = useToast();
     const [productos, setProductos] = useState<ProductoBase[]>([]);
-    const [variantes, setVariantes] = useState<VarianteProducto[]>([]); // Flattened view for MVP list?
-    // Actually, the prototype says "List/Search Products".
-    // Ideally we show Variants directly or Products with expanded variants.
-    // Let's show Variants as the main inventory unit.
+    const [showImportModal, setShowImportModal] = useState(false);
+
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState<string>('');
 
     useEffect(() => {
         fetchInventory();
@@ -18,13 +21,6 @@ const Home: React.FC = () => {
 
     const fetchInventory = async () => {
         try {
-            // For MVP, we might need an endpoint that returns all variants with product info.
-            // Currently we have getAllProductos and getVariantesByProducto.
-            // Let's fetch products then fetch variants? Or just fetch all products and their variants?
-            // The backend ProductoController has getVariantesByProducto.
-            // We probably need a "getAllVariantes" endpoint for the main list if we want to search everything.
-            // Or we list Products and expand them.
-            // Let's list Products for now.
             const response = await api.get<ProductoBase[]>('/productos');
             setProductos(response.data);
         } catch (error) {
@@ -35,22 +31,81 @@ const Home: React.FC = () => {
     };
 
     // Filter products
-    const filteredProductos = productos.filter(p =>
-        p.marca.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.modelo.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredProductos = productos.filter(p => {
+        const matchesSearch = p.marca.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            p.modelo.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesCategory = selectedCategory ? p.categoria === selectedCategory : true;
+        return matchesSearch && matchesCategory;
+    });
+
+    const handleExportExcel = async () => {
+        try {
+            const response = await api.get('/reportes/inventario/excel', {
+                responseType: 'blob',
+            });
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'inventario.xlsx');
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            showToast('Inventario exportado correctamente', 'success');
+        } catch (error) {
+            console.error('Error exporting excel:', error);
+            showToast('Error al exportar inventario', 'error');
+        }
+    };
 
     return (
         <div>
-            <div className="mb-4 relative">
-                <input
-                    type="text"
-                    placeholder="Buscar por marca, modelo..."
-                    className="input pl-10"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <Search className="absolute left-3 top-2.5 text-gray-400" size={20} />
+            <div className="mb-4 flex justify-between items-center">
+                <h2 className="text-2xl font-bold text-gray-800">Inventario</h2>
+                <div className="flex gap-2">
+                    <button
+                        onClick={() => setShowImportModal(true)}
+                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                        <Upload size={20} /> Importar
+                    </button>
+                    <button
+                        onClick={handleExportExcel}
+                        className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                    >
+                        <FileSpreadsheet size={20} /> Exportar
+                    </button>
+                </div>
+            </div>
+
+            <div className="mb-4 space-y-3">
+                <div className="relative">
+                    <input
+                        type="text"
+                        placeholder="Buscar por marca, modelo..."
+                        className="w-full pl-10 pr-4 py-3 rounded-xl border-gray-200 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    <Search className="absolute left-3 top-3.5 text-gray-400" size={20} />
+                </div>
+
+                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                    <button
+                        className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${!selectedCategory ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 border'}`}
+                        onClick={() => setSelectedCategory('')}
+                    >
+                        Todos
+                    </button>
+                    {Object.values(Categoria).map(cat => (
+                        <button
+                            key={cat}
+                            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${selectedCategory === cat ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 border'}`}
+                            onClick={() => setSelectedCategory(cat)}
+                        >
+                            {cat}
+                        </button>
+                    ))}
+                </div>
             </div>
 
             {loading ? (
@@ -61,6 +116,15 @@ const Home: React.FC = () => {
                         <ProductCard key={producto.id} producto={producto} />
                     ))}
                 </div>
+            )}
+
+            {showImportModal && (
+                <ExcelUpload
+                    onClose={() => setShowImportModal(false)}
+                    onSuccess={() => {
+                        fetchInventory();
+                    }}
+                />
             )}
         </div>
     );

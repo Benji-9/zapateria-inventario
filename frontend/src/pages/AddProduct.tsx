@@ -3,14 +3,39 @@ import api from '../services/api';
 import { Categoria, Genero } from '../types';
 import type { ProductoBase, VarianteProducto } from '../types';
 import { Plus, Save } from 'lucide-react';
+import { useToast } from '../context/ToastContext';
 
 const AddProduct: React.FC = () => {
+    const { showToast } = useToast();
+
+    const brands = [
+        "Hush Puppies", "Merrell", "CAT", "Kickers", "Roble", "Boating",
+        "Brooksfield", "Tomahawk", "Boaonda", "Tabbuso", "Benti", "Donatella",
+        "Keady", "Cherie", "Fragola", "Penelope", "Gondolino", "Ferli",
+        "Piscis", "Giuliani", "Perissinotto"
+    ].sort();
+
+    const categoriesByGender: Record<string, string[]> = {
+        [Genero.MUJER]: [
+            'ZAPATILLA', 'URBANO', 'SANDALIA', 'ZUECO', 'MOCASIN', 'CHINELA',
+            'BOTA', 'BORCEGO', 'CARTERA', 'BILLETERA'
+        ],
+        [Genero.HOMBRE]: [
+            'ZAPATILLA', 'ZAPATILLA_CASUAL', 'ZAPATO_VESTIR', 'NAUTICO', 'COMFORT',
+            'BOTA', 'BORCEGO', 'OUTDOOR', 'SANDALIA', 'CHINELA', 'BILLETERA'
+        ],
+        [Genero.NINO]: [
+            'ZAPATILLA', 'COLEGIAL', 'ZAPATO', 'SANDALIA', 'OUTDOOR'
+        ],
+        [Genero.UNISEX]: Object.keys(Categoria)
+    };
+
     const [activeTab, setActiveTab] = useState<'general' | 'variantes'>('general');
     const [producto, setProducto] = useState<Partial<ProductoBase>>({
         marca: '',
         modelo: '',
-        categoria: Categoria.ZAPATILLA,
-        genero: Genero.UNISEX,
+        categoria: undefined, // Start empty to force selection
+        genero: Genero.MUJER, // Default to Mujer as per image 1
         temporada: '',
         proveedor: ''
     });
@@ -34,10 +59,17 @@ const AddProduct: React.FC = () => {
             const res = await api.post<ProductoBase>('/productos', producto);
             setCreatedProduct(res.data);
             setActiveTab('variantes');
-            alert('Producto creado correctamente. Ahora agregue variantes.');
-        } catch (error) {
+            showToast('Producto creado correctamente. Ahora agregue variantes.', 'success');
+        } catch (error: any) {
             console.error('Error creating product:', error);
-            alert('Error al crear producto');
+            const msg = error.response?.data?.message || 'Error al crear producto';
+            const details = error.response?.data?.details;
+            if (details) {
+                const detailMsg = Object.values(details).join(', ');
+                showToast(`${msg}: ${detailMsg}`, 'error');
+            } else {
+                showToast(msg, 'error');
+            }
         }
     };
 
@@ -57,10 +89,17 @@ const AddProduct: React.FC = () => {
                 stockMinimo: 5,
                 ubicacion: 'Deposito'
             });
-            alert('Variante agregada');
-        } catch (error) {
+            showToast('Variante agregada', 'success');
+        } catch (error: any) {
             console.error('Error creating variant:', error);
-            alert('Error al crear variante (verifique SKU único)');
+            const msg = error.response?.data?.message || 'Error al crear variante';
+            const details = error.response?.data?.details;
+            if (details) {
+                const detailMsg = Object.values(details).join(', ');
+                showToast(`${msg}: ${detailMsg}`, 'error');
+            } else {
+                showToast(msg, 'error');
+            }
         }
     };
 
@@ -77,7 +116,7 @@ const AddProduct: React.FC = () => {
                 </button>
                 <button
                     className={`px-4 py-2 ${activeTab === 'variantes' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500'}`}
-                    onClick={() => createdProduct ? setActiveTab('variantes') : alert('Primero guarde el producto')}
+                    onClick={() => createdProduct ? setActiveTab('variantes') : showToast('Primero guarde el producto', 'info')}
                 >
                     Variantes
                 </button>
@@ -88,9 +127,13 @@ const AddProduct: React.FC = () => {
                     <input
                         className="input"
                         placeholder="Marca"
+                        list="brands-list"
                         value={producto.marca}
                         onChange={e => setProducto({ ...producto, marca: e.target.value })}
                     />
+                    <datalist id="brands-list">
+                        {brands.map(brand => <option key={brand} value={brand} />)}
+                    </datalist>
                     <input
                         className="input"
                         placeholder="Modelo"
@@ -99,17 +142,27 @@ const AddProduct: React.FC = () => {
                     />
                     <select
                         className="input"
-                        value={producto.categoria}
-                        onChange={e => setProducto({ ...producto, categoria: e.target.value as Categoria })}
+                        value={producto.genero}
+                        onChange={e => {
+                            const newGender = e.target.value as Genero;
+                            setProducto({
+                                ...producto,
+                                genero: newGender,
+                                categoria: undefined
+                            });
+                        }}
                     >
-                        {Object.values(Categoria).map(c => <option key={c} value={c}>{c}</option>)}
+                        {Object.values(Genero).map(g => <option key={g} value={g}>{g}</option>)}
                     </select>
                     <select
                         className="input"
-                        value={producto.genero}
-                        onChange={e => setProducto({ ...producto, genero: e.target.value as Genero })}
+                        value={producto.categoria || ''}
+                        onChange={e => setProducto({ ...producto, categoria: e.target.value as Categoria })}
                     >
-                        {Object.values(Genero).map(g => <option key={g} value={g}>{g}</option>)}
+                        <option value="" disabled>Seleccione Categoría</option>
+                        {(categoriesByGender[producto.genero || Genero.UNISEX] || Object.keys(Categoria)).map(c => (
+                            <option key={c} value={c}>{c.replace('_', ' ')}</option>
+                        ))}
                     </select>
                     <input
                         className="input"
@@ -157,8 +210,9 @@ const AddProduct: React.FC = () => {
                         </ul>
                     )}
                 </div>
-            )}
-        </div>
+            )
+            }
+        </div >
     );
 };
 

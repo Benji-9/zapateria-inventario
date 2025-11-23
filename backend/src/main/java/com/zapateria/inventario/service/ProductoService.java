@@ -44,14 +44,15 @@ public class ProductoService {
         }
         return varianteRepository.save(variante);
     }
-    
+
     public Optional<VarianteProducto> getVarianteById(Long id) {
         return varianteRepository.findById(id);
     }
 
     public List<VarianteProducto> searchVariantes(String query) {
-        // Basic search implementation - can be expanded
-        // For now, we rely on frontend filtering or specific repository methods
-        return varianteRepository.findAll(); 
+        if (query == null || query.trim().isEmpty()) {
+            return varianteRepository.findAll();
+        }
+        return varianteRepository.search(query);
     }
 }

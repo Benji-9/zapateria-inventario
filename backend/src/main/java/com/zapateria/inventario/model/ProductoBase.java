@@ -3,6 +3,7 @@ package com.zapateria.inventario.model;
 import com.zapateria.inventario.model.enums.Categoria;
 import com.zapateria.inventario.model.enums.Genero;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
@@ -14,9 +15,11 @@ public class ProductoBase {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "La marca es obligatoria")
     @Column(nullable = false)
     private String marca;
 
+    @NotBlank(message = "El modelo es obligatorio")
     @Column(nullable = false)
     private String modelo;
 

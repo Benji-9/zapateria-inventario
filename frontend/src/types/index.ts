@@ -1,32 +1,49 @@
-export enum Categoria {
-    ZAPATILLA = 'ZAPATILLA',
-    BOTA = 'BOTA',
-    SANDALIA = 'SANDALIA',
-    ZAPATO_VESTIR = 'ZAPATO_VESTIR',
-    DEPORTIVO = 'DEPORTIVO',
-    OTRO = 'OTRO'
-}
+export const Categoria = {
+    ZAPATILLA: 'ZAPATILLA',
+    ZAPATILLA_CASUAL: 'ZAPATILLA_CASUAL',
+    URBANO: 'URBANO',
+    SANDALIA: 'SANDALIA',
+    ZUECO: 'ZUECO',
+    MOCASIN: 'MOCASIN',
+    CHINELA: 'CHINELA',
+    BOTA: 'BOTA',
+    BORCEGO: 'BORCEGO',
+    ZAPATO_VESTIR: 'ZAPATO_VESTIR',
+    NAUTICO: 'NAUTICO',
+    COMFORT: 'COMFORT',
+    OUTDOOR: 'OUTDOOR',
+    COLEGIAL: 'COLEGIAL',
+    ZAPATO: 'ZAPATO',
+    CARTERA: 'CARTERA',
+    BILLETERA: 'BILLETERA',
+    DEPORTIVO: 'DEPORTIVO',
+    OTRO: 'OTRO'
+} as const;
+export type Categoria = typeof Categoria[keyof typeof Categoria];
 
-export enum Genero {
-    HOMBRE = 'HOMBRE',
-    MUJER = 'MUJER',
-    NINO = 'NINO',
-    UNISEX = 'UNISEX'
-}
+export const Genero = {
+    HOMBRE: 'HOMBRE',
+    MUJER: 'MUJER',
+    NINO: 'NINO',
+    UNISEX: 'UNISEX'
+} as const;
+export type Genero = typeof Genero[keyof typeof Genero];
 
-export enum TipoMovimiento {
-    ENTRADA = 'ENTRADA',
-    SALIDA = 'SALIDA',
-    AJUSTE = 'AJUSTE'
-}
+export const TipoMovimiento = {
+    ENTRADA: 'ENTRADA',
+    SALIDA: 'SALIDA',
+    AJUSTE: 'AJUSTE'
+} as const;
+export type TipoMovimiento = typeof TipoMovimiento[keyof typeof TipoMovimiento];
 
-export enum MotivoMovimiento {
-    COMPRA = 'COMPRA',
-    VENTA = 'VENTA',
-    MERMA = 'MERMA',
-    DEVOLUCION = 'DEVOLUCION',
-    INVENTARIO = 'INVENTARIO'
-}
+export const MotivoMovimiento = {
+    COMPRA: 'COMPRA',
+    VENTA: 'VENTA',
+    MERMA: 'MERMA',
+    DEVOLUCION: 'DEVOLUCION',
+    INVENTARIO: 'INVENTARIO'
+} as const;
+export type MotivoMovimiento = typeof MotivoMovimiento[keyof typeof MotivoMovimiento];
 
 export interface ProductoBase {
     id?: number;

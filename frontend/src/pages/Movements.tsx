@@ -3,8 +3,10 @@ import api from '../services/api';
 import { TipoMovimiento, MotivoMovimiento } from '../types';
 import type { VarianteProducto, MovimientoStock } from '../types';
 import { Search, Save } from 'lucide-react';
+import { useToast } from '../context/ToastContext';
 
 const Movements: React.FC = () => {
+    const { showToast } = useToast();
     const [searchTerm, setSearchTerm] = useState('');
     const [variantes, setVariantes] = useState<VarianteProducto[]>([]);
     const [selectedVariant, setSelectedVariant] = useState<VarianteProducto | null>(null);
@@ -43,10 +45,7 @@ const Movements: React.FC = () => {
         api.get('/productos').then(res => setAllProducts(res.data));
     }, []);
 
-    const handleSearch = async () => {
-        // Mock search: filter allProducts
-        // Ideally we select a product, then a variant.
-    };
+
 
     const handleSubmit = async () => {
         if (!selectedVariant || !movimiento.cantidad) return;
@@ -57,12 +56,13 @@ const Movements: React.FC = () => {
                 variante: selectedVariant
             };
             await api.post('/stock/movimientos', payload);
-            alert('Movimiento registrado con éxito');
+            showToast('Movimiento registrado con éxito', 'success');
             setMovimiento({ ...movimiento, cantidad: 1, observaciones: '' });
             setSelectedVariant(null);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error registering movement:', error);
-            alert('Error al registrar movimiento');
+            const msg = error.response?.data?.message || 'Error al registrar movimiento';
+            showToast(msg, 'error');
         }
     };
 

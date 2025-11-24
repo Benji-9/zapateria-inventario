@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import { TipoMovimiento, MotivoMovimiento } from '../types';
 import type { VarianteProducto, MovimientoStock } from '../types';
-import { Search, Save } from 'lucide-react';
+import { Search, Save, ShoppingBag, PlusCircle, Trash2 } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 
 const Movements: React.FC = () => {
@@ -130,27 +130,48 @@ const Movements: React.FC = () => {
             <div className="card">
                 <h3 className="font-semibold mb-2">2. Detalles del Movimiento</h3>
 
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
-                <div className="flex gap-2 mb-3">
-                    {Object.values(TipoMovimiento).map(t => (
-                        <button
-                            key={t}
-                            className={`flex-1 py-2 rounded border ${movimiento.tipo === t ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700'}`}
-                            onClick={() => setMovimiento({ ...movimiento, tipo: t })}
-                        >
-                            {t}
-                        </button>
-                    ))}
-                </div>
+                <h3 className="font-semibold mb-4">2. Tipo de Movimiento</h3>
 
-                <label className="block text-sm font-medium text-gray-700 mb-1">Motivo</label>
-                <select
-                    className="input mb-3"
-                    value={movimiento.motivo}
-                    onChange={e => setMovimiento({ ...movimiento, motivo: e.target.value as MotivoMovimiento })}
-                >
-                    {Object.values(MotivoMovimiento).map(m => <option key={m} value={m}>{m}</option>)}
-                </select>
+                <div className="grid grid-cols-3 gap-4 mb-6">
+                    <button
+                        className={`p-4 rounded-xl border-2 flex flex-col items-center gap-2 transition-all ${movimiento.tipo === TipoMovimiento.SALIDA && movimiento.motivo === MotivoMovimiento.VENTA
+                            ? 'border-green-500 bg-green-50 text-green-700'
+                            : 'border-gray-100 hover:border-green-200 hover:bg-green-50'
+                            }`}
+                        onClick={() => setMovimiento({ ...movimiento, tipo: TipoMovimiento.SALIDA, motivo: MotivoMovimiento.VENTA })}
+                    >
+                        <div className="p-2 bg-green-100 rounded-full text-green-600">
+                            <ShoppingBag size={24} />
+                        </div>
+                        <span className="font-medium">Venta</span>
+                    </button>
+
+                    <button
+                        className={`p-4 rounded-xl border-2 flex flex-col items-center gap-2 transition-all ${movimiento.tipo === TipoMovimiento.ENTRADA
+                            ? 'border-blue-500 bg-blue-50 text-blue-700'
+                            : 'border-gray-100 hover:border-blue-200 hover:bg-blue-50'
+                            }`}
+                        onClick={() => setMovimiento({ ...movimiento, tipo: TipoMovimiento.ENTRADA, motivo: MotivoMovimiento.COMPRA })}
+                    >
+                        <div className="p-2 bg-blue-100 rounded-full text-blue-600">
+                            <PlusCircle size={24} />
+                        </div>
+                        <span className="font-medium">Aumentar Stock</span>
+                    </button>
+
+                    <button
+                        className={`p-4 rounded-xl border-2 flex flex-col items-center gap-2 transition-all ${movimiento.tipo === TipoMovimiento.SALIDA && movimiento.motivo === MotivoMovimiento.MERMA
+                            ? 'border-red-500 bg-red-50 text-red-700'
+                            : 'border-gray-100 hover:border-red-200 hover:bg-red-50'
+                            }`}
+                        onClick={() => setMovimiento({ ...movimiento, tipo: TipoMovimiento.SALIDA, motivo: MotivoMovimiento.MERMA })}
+                    >
+                        <div className="p-2 bg-red-100 rounded-full text-red-600">
+                            <Trash2 size={24} />
+                        </div>
+                        <span className="font-medium">Eliminar Producto</span>
+                    </button>
+                </div>
 
                 <label className="block text-sm font-medium text-gray-700 mb-1">Cantidad</label>
                 <input
